@@ -1,0 +1,8 @@
+[server]
+headless = true
+
+[client]
+showSidebarNavigation = false
+
+[runner]
+magicEnabled = false
