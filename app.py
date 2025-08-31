@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # Maintenance mode control
-MAINTENANCE_MODE = True  # Set to False when you want the app to be live
+MAINTENANCE_MODE = False  # Set to False when you want the app to be live
 
 # Initialize session state for data storage
 if 'stored_data' not in st.session_state:
