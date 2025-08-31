@@ -61,7 +61,7 @@ def show_maintenance_page():
     # Create a placeholder for the countdown
     countdown_placeholder = st.empty()
     
-    # Display static countdown (Streamlit Cloud doesn't support real-time updates well)
+    # Display static countdown
     time_left = maintenance_end - datetime.now()
     hours, remainder = divmod(time_left.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
@@ -158,9 +158,8 @@ def main():
         if st.checkbox("Show debug info", False):
             st.write("Python version:", sys.version)
             st.write("Current directory:", os.getcwd())
-            st.write("Files in directory:", os.listdir('.'))
             if os.path.exists('pages'):
-                st.write("Pages directory:", os.listdir('pages'))
+                st.write("Pages directory exists")
     
     if MAINTENANCE_MODE:
         show_maintenance_page()
