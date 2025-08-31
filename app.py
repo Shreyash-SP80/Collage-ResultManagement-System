@@ -58,14 +58,11 @@ def show_maintenance_page():
     # Set maintenance end time
     maintenance_end = datetime.now() + timedelta(hours=2)
     
-    # Create a placeholder for the countdown
-    countdown_placeholder = st.empty()
-    
     # Display static countdown
     time_left = maintenance_end - datetime.now()
     hours, remainder = divmod(time_left.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
-    countdown_placeholder.info(f"Estimated time until maintenance completes: {hours:02d}:{minutes:02d}:{seconds:02d}")
+    st.info(f"Estimated time until maintenance completes: {hours:02d}:{minutes:02d}:{seconds:02d}")
     
     st.markdown("---")
     st.markdown("""
@@ -73,94 +70,73 @@ def show_maintenance_page():
         <p>Developed by Shreyash Patil | Analytics Dashboard</p>
     </div>
     """, unsafe_allow_html=True)
-
-def load_page_modules():
-    """Safely load page modules with error handling"""
-    try:
-        # Add the current directory to Python path
-        sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-        
-        from pages import upload_pdf, dashboard, top_students, division_analysis, pass_fail_analysis, subject_analysis, student_search, excel_report
-        return {
-            "upload_pdf": upload_pdf,
-            "dashboard": dashboard,
-            "top_students": top_students,
-            "division_analysis": division_analysis,
-            "pass_fail_analysis": pass_fail_analysis,
-            "subject_analysis": subject_analysis,
-            "student_search": student_search,
-            "excel_report": excel_report
-        }
-    except ImportError as e:
-        st.error(f"Error importing page modules: {str(e)}")
-        st.code(traceback.format_exc())
-        return None
-    except Exception as e:
-        st.error(f"Unexpected error: {str(e)}")
-        st.code(traceback.format_exc())
-        return None
 
 def show_main_app():
-    # Load page modules with error handling
-    page_modules = load_page_modules()
-    if page_modules is None:
-        st.error("Failed to load application modules. Please check the logs.")
-        return
-    
-    st.title("🎓 College Result Management System")
-    st.markdown("---")
-    
-    st.sidebar.title("Navigation")
-    menu_options = [
-        "Upload PDF",
-        "Performance Dashboard",
-        "View Top Students",
-        "Division Analysis",
-        "Pass/Fail Analysis",
-        "Subject-wise Analysis",
-        "Student Search",
-        "Generate Excel Report"
-    ]
-    choice = st.sidebar.selectbox("Select Option", menu_options)
-    
-    # Route to the appropriate page with error handling
     try:
-        if choice == "Upload PDF":
-            page_modules["upload_pdf"].show()
-        elif choice == "Performance Dashboard":
-            page_modules["dashboard"].show()
-        elif choice == "View Top Students":
-            page_modules["top_students"].show()
-        elif choice == "Division Analysis":
-            page_modules["division_analysis"].show()
-        elif choice == "Pass/Fail Analysis":
-            page_modules["pass_fail_analysis"].show()
-        elif choice == "Subject-wise Analysis":
-            page_modules["subject_analysis"].show()
-        elif choice == "Student Search":
-            page_modules["student_search"].show()
-        elif choice == "Generate Excel Report":
-            page_modules["excel_report"].show()
+        # Try to import page modules
+        try:
+            # Add the pages directory to Python path
+            pages_dir = os.path.join(os.path.dirname(__file__), 'pages')
+            if pages_dir not in sys.path:
+                sys.path.append(pages_dir)
+            
+            # Import all page modules
+            from pages import upload_pdf, dashboard, top_students, division_analysis, pass_fail_analysis, subject_analysis, student_search, excel_report
+        except ImportError as e:
+            st.error(f"Error importing page modules: {str(e)}")
+            st.info("Please make sure all page files exist in the 'pages' directory")
+            return
+        
+        st.title("🎓 College Result Management System")
+        st.markdown("---")
+        
+        st.sidebar.title("Navigation")
+        menu_options = [
+            "Upload PDF",
+            "Performance Dashboard",
+            "View Top Students",
+            "Division Analysis",
+            "Pass/Fail Analysis",
+            "Subject-wise Analysis",
+            "Student Search",
+            "Generate Excel Report"
+        ]
+        choice = st.sidebar.selectbox("Select Option", menu_options)
+        
+        # Route to the appropriate page with error handling
+        try:
+            if choice == "Upload PDF":
+                upload_pdf.show()
+            elif choice == "Performance Dashboard":
+                dashboard.show()
+            elif choice == "View Top Students":
+                top_students.show()
+            elif choice == "Division Analysis":
+                division_analysis.show()
+            elif choice == "Pass/Fail Analysis":
+                pass_fail_analysis.show()
+            elif choice == "Subject-wise Analysis":
+                subject_analysis.show()
+            elif choice == "Student Search":
+                student_search.show()
+            elif choice == "Generate Excel Report":
+                excel_report.show()
+        except Exception as e:
+            st.error(f"Error in {choice} page: {str(e)}")
+            st.code(traceback.format_exc())
+        
+        st.markdown("---")
+        st.markdown("""
+        <div style="text-align: center; color: #666; font-size: 0.9em;">
+            <p>Developed by Shreyash Patil | Analytics Dashboard</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
     except Exception as e:
-        st.error(f"Error loading {choice} page: {str(e)}")
+        st.error("A critical error occurred in the application")
         st.code(traceback.format_exc())
-    
-    st.markdown("---")
-    st.markdown("""
-    <div style="text-align: center; color: #666; font-size: 0.9em;">
-        <p>Developed by Shreyash Patil | Analytics Dashboard</p>
-    </div>
-    """, unsafe_allow_html=True)
 
 def main():
-    # Add debug information in sidebar
-    with st.sidebar:
-        if st.checkbox("Show debug info", False):
-            st.write("Python version:", sys.version)
-            st.write("Current directory:", os.getcwd())
-            if os.path.exists('pages'):
-                st.write("Pages directory exists")
-    
     if MAINTENANCE_MODE:
         show_maintenance_page()
     else:
